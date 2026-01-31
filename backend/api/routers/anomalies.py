@@ -9,7 +9,7 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 
 from api.config import SEDES, SECTORES
-from api.utils.db import get_consumos, get_anomalias_recientes
+from api.utils.db import get_consumos
 from api.ml.anomaly_detector import generate_anomaly_report
 from api.utils.charts import generate_anomaly_chart
 
