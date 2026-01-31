@@ -91,20 +91,21 @@ class ModelManager:
         future = model.make_future_dataframe(periods=hours_ahead, freq="h")
         future = future.tail(hours_ahead)  # Solo las horas futuras
 
-        # Agregar regresores
+        # Agregar regresores (deben coincidir con los del entrenamiento)
         future["temperatura_exterior_c"] = temperatura
         future["ocupacion_pct"] = ocupacion
         future["es_fin_semana"] = future["ds"].dt.dayofweek.isin([5, 6]).astype(int)
+        future["es_festivo"] = 0  # Por defecto no es festivo
 
         forecast = model.predict(future)
         result = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].copy()
 
-        # Asegurar valores no negativos
+        # Energia no puede ser negativa
         result["yhat"] = result["yhat"].clip(lower=0)
         result["yhat_lower"] = result["yhat_lower"].clip(lower=0)
         result["yhat_upper"] = result["yhat_upper"].clip(lower=0)
 
-        logger.info(f"Predicción generada: {sede}/{sector}, {hours_ahead}h")
+        logger.info(f"Prediccion generada: {sede}/{sector}, {hours_ahead}h")
         return result
 
 
@@ -113,18 +114,18 @@ def train_model(
     sede: str,
     sector: str,
     save: bool = True,
-) -> Prophet:
+) -> tuple[Prophet, pd.DataFrame]:
     """
-    Entrena un modelo Prophet para una sede y sector específicos.
+    Entrena un modelo Prophet para una sede y sector especificos.
 
     Args:
-        df: DataFrame con el dataset completo
+        df: DataFrame con el dataset completo (consumos_uptc_clean.csv)
         sede: Nombre de la sede a filtrar
-        sector: Nombre del sector (columna del CSV)
+        sector: Nombre del sector
         save: Si True, guarda el modelo entrenado en disco
 
     Returns:
-        Modelo Prophet entrenado
+        Tupla (modelo_entrenado, dataframe_prophet) para evaluacion posterior
     """
     col = SECTOR_COLUMNS.get(sector)
     if col is None:
@@ -135,13 +136,14 @@ def train_model(
     if df_sede.empty:
         raise ValueError(f"No hay datos para la sede: {sede}")
 
-    # Preparar formato Prophet
+    # Preparar formato Prophet (ds=timestamp, y=variable objetivo)
     df_prophet = pd.DataFrame({
         "ds": pd.to_datetime(df_sede["timestamp"]),
         "y": df_sede[col].astype(float),
         "temperatura_exterior_c": df_sede["temperatura_exterior_c"].astype(float),
         "ocupacion_pct": df_sede["ocupacion_pct"].astype(float),
         "es_fin_semana": df_sede["es_fin_semana"].astype(int),
+        "es_festivo": df_sede["es_festivo"].astype(int),
     }).dropna()
 
     logger.info(f"Entrenando modelo {sede}/{sector} con {len(df_prophet)} registros...")
@@ -158,6 +160,7 @@ def train_model(
     model.add_regressor("temperatura_exterior_c")
     model.add_regressor("ocupacion_pct")
     model.add_regressor("es_fin_semana")
+    model.add_regressor("es_festivo")
 
     model.fit(df_prophet)
 
@@ -168,7 +171,7 @@ def train_model(
             pickle.dump(model, f)
         logger.info(f"Modelo guardado: {path}")
 
-    return model
+    return model, df_prophet
 
 
 # Instancia global del gestor de modelos
