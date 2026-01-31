@@ -24,6 +24,7 @@ BASE_URL: str = os.getenv("BASE_URL", "http://localhost:8000")
 MODELS_DIR: str = os.getenv("MODELS_DIR", "models/trained")
 CHARTS_DIR: str = os.getenv("CHARTS_DIR", "static/charts")
 DATA_DIR: str = os.getenv("DATA_DIR", "data")
+DATASET_FILE: str = os.path.join(DATA_DIR, "consumos_uptc_clean.csv")
 
 # --- Constantes del dominio ---
 SEDES = ["Tunja", "Duitama", "Sogamoso", "Chiquinquirá"]

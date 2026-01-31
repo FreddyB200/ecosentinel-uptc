@@ -28,8 +28,8 @@ env/
 .DS_Store
 Thumbs.db
 
-# Modelos entrenados (se regeneran con train_models.py)
-backend/models/trained/*.pkl
+# Modelos entrenados (versionados para que el equipo los use sin reentrenar)
+# Para regenerar: python3 -m scripts.train_models
 
 # Gráficos generados (se regeneran en runtime)
 backend/static/charts/*.png

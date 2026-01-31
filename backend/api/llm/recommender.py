@@ -6,23 +6,30 @@ import logging
 import json
 from typing import Optional
 
-import google.generativeai as genai
-
 from api.config import GEMINI_API_KEY, PRECIO_KWH_COP, CO2_FACTOR
 
 logger = logging.getLogger("ecosentinel.recommender")
 
 _model = None
+_genai = None
+
+try:
+    import google.generativeai as genai
+    _genai = genai
+except ImportError:
+    logger.warning("google-generativeai no instalado. Recomendaciones usaran fallback estatico.")
 
 
 def _get_model():
     """Inicializa el modelo Gemini de forma lazy."""
     global _model
     if _model is None:
+        if _genai is None:
+            raise ValueError("google-generativeai no instalado")
         if not GEMINI_API_KEY:
             raise ValueError("GEMINI_API_KEY no configurada")
-        genai.configure(api_key=GEMINI_API_KEY)
-        _model = genai.GenerativeModel("gemini-1.5-flash")
+        _genai.configure(api_key=GEMINI_API_KEY)
+        _model = _genai.GenerativeModel("gemini-1.5-flash")
         logger.info("Modelo Gemini inicializado")
     return _model
 
