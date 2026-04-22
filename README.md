@@ -19,6 +19,8 @@
 - 🚀 The hackathon coincided with the **official launch of NovaIA** — Indra Group's first AI Center of Excellence in Colombia — attended by leaders from Microsoft, IBM, SAP, Bancolombia, Grupo Aval, and Colombia's Air Force, among others
 - 🎯 Challenge: optimize energy consumption across university campuses using AI
 
+> 📝 [Read the full story on LinkedIn →](https://www.linkedin.com/posts/freddy-bautista-baquero_iaminds-uptc-prophet-ugcPost-7430367801011466240-kLCg?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFVFBS8BuFdGfRMizxtJGgOfbt08lN91V6g)
+
 ### Key Design Decisions
 
 - **WhatsApp as primary interface** — prioritized real adoption over a pure tech demo; any UPTC staff member can query predictions in natural language without installing anything
