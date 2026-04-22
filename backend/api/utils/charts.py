@@ -1,8 +1,11 @@
 """
 Generación de gráficos PNG con Matplotlib.
 Los gráficos se guardan en static/charts/ y se sirven como archivos estáticos.
+Opcionalmente se retornan como base64 para envío directo por WhatsApp via n8n.
 """
 
+import base64
+import io
 import logging
 import os
 import time
@@ -35,13 +38,6 @@ COLORS = {
 def _save_chart(fig: plt.Figure, prefix: str = "chart") -> str:
     """
     Guarda una figura matplotlib como PNG y retorna la URL pública.
-
-    Args:
-        fig: Figura de matplotlib
-        prefix: Prefijo para el nombre del archivo
-
-    Returns:
-        URL pública del gráfico generado
     """
     os.makedirs(CHARTS_DIR, exist_ok=True)
     filename = f"{prefix}_{int(time.time() * 1000)}.png"
@@ -50,6 +46,20 @@ def _save_chart(fig: plt.Figure, prefix: str = "chart") -> str:
     plt.close(fig)
     logger.info(f"Gráfico guardado: {filepath}")
     return f"{BASE_URL}/charts/{filename}"
+
+
+def _fig_to_base64(fig: plt.Figure) -> str:
+    """
+    Convierte una figura matplotlib a string base64 PNG.
+    Usado para enviar graficas por WhatsApp via Evolution API.
+    """
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=150, bbox_inches="tight", facecolor="white")
+    buf.seek(0)
+    b64 = base64.b64encode(buf.read()).decode("utf-8")
+    buf.close()
+    plt.close(fig)
+    return b64
 
 
 def generate_consumption_chart(
@@ -241,3 +251,65 @@ def generate_comparison_chart(
 
     fig.tight_layout()
     return _save_chart(fig, prefix="comparacion")
+
+
+def generate_prediction_chart_b64(
+    predicciones: pd.DataFrame,
+    sede: str,
+    sector: str,
+    historico: Optional[pd.DataFrame] = None,
+) -> str:
+    """
+    Genera gráfico de predicción y lo retorna como base64.
+    Diseñado para el flujo n8n → WhatsApp.
+
+    Args:
+        predicciones: DataFrame con ds, yhat, yhat_lower, yhat_upper
+        sede: Nombre de la sede
+        sector: Nombre del sector
+        historico: DataFrame opcional con timestamp, energia_kwh (datos recientes)
+
+    Returns:
+        String base64 de la imagen PNG
+    """
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Historico si esta disponible
+    if historico is not None and not historico.empty:
+        hist_ts = pd.to_datetime(historico["timestamp"])
+        ax.plot(
+            hist_ts, historico["energia_kwh"],
+            color=COLORS["primary"], linewidth=1.5, alpha=0.7,
+            label="Histórico",
+        )
+        # Linea divisoria
+        ax.axvline(
+            x=hist_ts.iloc[-1], color=COLORS["danger"],
+            linestyle=":", linewidth=1.5, alpha=0.5,
+        )
+
+    # Predicciones
+    pred_ts = pd.to_datetime(predicciones["ds"])
+    ax.plot(
+        pred_ts, predicciones["yhat"],
+        color=COLORS["accent"], linewidth=2, label="Predicción",
+    )
+    ax.fill_between(
+        pred_ts,
+        predicciones["yhat_lower"],
+        predicciones["yhat_upper"],
+        alpha=0.2, color=COLORS["accent"], label="Intervalo 95%",
+    )
+
+    ax.set_title(
+        f"Predicción Energética - {sede} / {sector}",
+        fontsize=14, fontweight="bold", color=COLORS["dark"],
+    )
+    ax.set_xlabel("Fecha / Hora", fontsize=11)
+    ax.set_ylabel("Energía (kWh)", fontsize=11)
+    ax.legend(loc="upper right")
+    ax.xaxis.set_major_formatter(mdates.DateFormatter("%d/%m %Hh"))
+    plt.xticks(rotation=30)
+
+    fig.tight_layout()
+    return _fig_to_base64(fig)

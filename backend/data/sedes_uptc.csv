@@ -1,0 +1,5 @@
+sede,sede_id,nombre_completo,ciudad,area_m2,num_estudiantes,num_empleados,num_edificios,tiene_residencias,tiene_laboratorios_pesados,altitud_msnm,temp_promedio_c,pct_comedores,pct_salones,pct_laboratorios,pct_auditorios,pct_oficinas
+Tunja,UPTC_TUN,Sede Central Tunja,Tunja,85000,18000,1200,25,True,True,2820,13,0.12,0.25,0.3,0.08,0.25
+Duitama,UPTC_DUI,Sede Duitama,Duitama,35000,5500,350,12,False,True,2530,15,0.1,0.28,0.32,0.07,0.23
+Sogamoso,UPTC_SOG,Sede Sogamoso,Sogamoso,40000,6000,400,14,False,True,2570,14,0.1,0.26,0.35,0.06,0.23
+Chiquinquirá,UPTC_CHI,Sede Chiquinquirá,Chiquinquirá,15000,2000,150,5,False,False,2580,14,0.08,0.35,0.2,0.1,0.27

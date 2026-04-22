@@ -28,14 +28,14 @@ env/
 .DS_Store
 Thumbs.db
 
-# Modelos entrenados (pesados, no versionar)
-backend/models/trained/*.pkl
+# Modelos entrenados (versionados para que el equipo los use sin reentrenar)
+# Para regenerar: python3 -m scripts.train_models
 
-# Gráficos generados
+# Gráficos generados (se regeneran en runtime)
 backend/static/charts/*.png
 
-# Dataset (pesado, no versionar)
-backend/data/*.csv
+# Documentos internos hackathon
+docs/*.pdf
 
 # Logs
 *.log
