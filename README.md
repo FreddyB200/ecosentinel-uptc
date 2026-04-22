@@ -9,7 +9,31 @@
 
 > Sistema inteligente de predicción, detección de anomalías y recomendaciones para optimizar el consumo energético y reducir la huella de carbono en las sedes de la UPTC.
 
-**Equipo Olinky** | HackDay IAMinds 2026 - Indra + UPTC
+---
+
+## 🏆 IAMinds Hackathon 2026 — 2nd Place
+
+**EcoSentinel** was built in 36 hours by **Equipo Olinky** at the **IAMinds Hackathon 2026**, organized by [Indra Group](https://www.indracompany.com/) and UPTC in Boyacá, Colombia.
+
+- 🥈 **2nd place** out of 80 teams and 283 participants from across Latin America
+- 🚀 The hackathon coincided with the **official launch of NovaIA** — Indra Group's first AI Center of Excellence in Colombia — attended by leaders from Microsoft, IBM, SAP, Bancolombia, Grupo Aval, and Colombia's Air Force, among others
+- 🎯 Challenge: optimize energy consumption across university campuses using AI
+
+> 📝 [Read the full story on LinkedIn →](https://www.linkedin.com/posts/freddy-bautista-baquero_iaminds-uptc-prophet-ugcPost-7430367801011466240-kLCg?utm_source=share&utm_medium=member_desktop&rcm=ACoAAFVFBS8BuFdGfRMizxtJGgOfbt08lN91V6g)
+
+### Key Design Decisions
+
+- **WhatsApp as primary interface** — prioritized real adoption over a pure tech demo; any UPTC staff member can query predictions in natural language without installing anything
+- **20 specialized Prophet models** (one per campus × sector) instead of a single general model, for higher accuracy per context
+- **Ollama-compatible architecture** — designed with data sovereignty in mind, critical for public institutions
+
+### Team Olinky
+
+| Member | Role |
+|--------|------|
+| **Freddy** | Backend FastAPI + ML + Architecture |
+| **Daniel** | Feature Engineering + Anomaly Detection + Optimization |
+| **John** | n8n Workflows + WhatsApp Bot |
 
 ---
 
@@ -94,7 +118,7 @@ graph TB
 
 ## API Endpoints
 
-### `POST /api/chat` - Chat principal (WhatsApp)
+### `POST /api/chat` — Chat principal (WhatsApp)
 ```json
 {
   "message": "Consumo comedores Tunja",
@@ -105,7 +129,7 @@ graph TB
 }
 ```
 
-### `POST /api/predict` - Predicción energética
+### `POST /api/predict` — Predicción energética
 ```json
 {
   "sede": "Tunja",
@@ -115,17 +139,17 @@ graph TB
 }
 ```
 
-### `GET /api/consumption` - Consumo histórico
+### `GET /api/consumption` — Consumo histórico
 ```
 /api/consumption?sede=Tunja&sector=Salones&dias=7
 ```
 
-### `GET /api/anomalies` - Detección de anomalías
+### `GET /api/anomalies` — Detección de anomalías
 ```
 /api/anomalies?sede=Duitama&sector=Laboratorios&threshold=2.5
 ```
 
-### `POST /api/recommendations` - Recomendaciones LLM
+### `POST /api/recommendations` — Recomendaciones LLM
 ```json
 {
   "sede": "Sogamoso",
@@ -133,7 +157,7 @@ graph TB
 }
 ```
 
-### `GET /health` - Health check
+### `GET /health` — Health check
 
 ## Inicio Rápido
 
@@ -211,13 +235,10 @@ ecosentinel-uptc/
 │   │   └── train_models.py      # Entrenamiento masivo
 │   ├── models/trained/          # Modelos .pkl
 │   ├── static/charts/           # Gráficos generados
-│   ├── data/                    # Dataset CSV
-│   ├── Dockerfile
-│   └── requirements.txt
+│   └── data/                    # Dataset CSV
 ├── frontend/
 │   ├── app.py                   # Streamlit dashboard
 │   ├── pages/
-│   ├── Dockerfile
 │   └── requirements.txt
 ├── n8n/                         # Workflows WhatsApp
 ├── docker-compose.yml
@@ -227,14 +248,14 @@ ecosentinel-uptc/
 
 ## Modelos ML
 
-**20 modelos Prophet** (1 por cada combinación sede + sector):
+**20 modelos Prophet** (1 por cada combinación sede × sector):
 
-| Sede | Sectores | Modelos |
-|------|----------|---------|
-| Tunja (18k est.) | 5 sectores | 5 |
-| Duitama (5.5k est.) | 5 sectores | 5 |
-| Sogamoso (6k est.) | 5 sectores | 5 |
-| Chiquinquirá (2k est.) | 5 sectores | 5 |
+| Sede | Estudiantes | Sectores | Modelos |
+|------|-------------|----------|---------|
+| Tunja | 18,000 | 5 | 5 |
+| Duitama | 5,500 | 5 | 5 |
+| Sogamoso | 6,000 | 5 | 5 |
+| Chiquinquirá | 2,000 | 5 | 5 |
 
 **Regresores:** temperatura exterior, ocupación, fin de semana
 
@@ -265,18 +286,10 @@ ecosentinel-uptc/
 | Ahorro económico anual | ~$780M COP |
 | Reducción CO2 anual | ~151 toneladas |
 
-## Equipo Olinky
-
-| Miembro | Rol |
-|---------|-----|
-| **Freddy** | Backend FastAPI + ML + Arquitectura |
-| **Daniel** | Feature Engineering + Anomalías + Optimización |
-| **John** | n8n Workflows + WhatsApp Bot |
-
 ## Licencia
 
-MIT License - Ver [LICENSE](LICENSE) para más detalles.
+MIT License — Ver [LICENSE](LICENSE) para más detalles.
 
 ---
 
-Desarrollado con dedicación para el HackDay IAMinds 2026 | Indra + UPTC
+*Desarrollado con dedicación en 36 horas para el HackDay IAMinds 2026 | Indra + UPTC*
